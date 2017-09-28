@@ -9,17 +9,17 @@
 
 # regex to validate in commit msg
 #commit_regex='(wap-[0-9]+|merge)'
-commit_regex="updated"
-error_msg="Aborting commit. Your commit message is missing either a JIRA Issue ('WAP-1111') or 'Merge'"
-echo "$1"
-MESSAGE=$(git log -1 HEAD --pretty=format:%s)
-echo "$MESSAGE"
+#commit_regex="updated"
+#error_msg="Aborting commit. Your commit message is missing either a JIRA Issue ('WAP-1111') or 'Merge'"
+#echo "$1"
+#MESSAGE=$(git log -1 HEAD --pretty=format:%s)
+#echo "$MESSAGE"
 #if grep "$commit_regex" "$MESSAGE"; then
-if [[ ${commit_regex} != ${1} ]]; then 
+#if [[ ${commit_regex} != ${1} ]]; then 
 #if ! grep -iE "$commit_regex" "$1"; then
-   echo "$error_msg" >&2
-    exit 1
-fi
+#   echo "$error_msg" >&2
+#    exit 1
+#fi
 
 #MSG="$1"
 
@@ -28,3 +28,22 @@ fi
 #    echo "Your commit message must contain the word 'updated'"
  #   exit 1
 #fi
+#!/bin/bash
+#
+# check commit messages for JIRA issue numbers formatted as [JIRA-<issue number>]
+
+REGEX="\[JIRA\-[0-9]*\]"
+
+ERROR_MSG="[POLICY] The commit doesn't reference a JIRA issue"
+
+while read OLDREV NEWREV REFNAME ; do
+  for COMMIT in `git rev-list $OLDREV..$NEWREV`;
+  do
+    MESSAGE=`git cat-file commit $COMMIT | sed '1,/^$/d'`
+    if ! echo $MESSAGE | grep -iqE "$REGEX"; then
+      echo "$ERROR_MSG: $MESSAGE" >&2
+      exit 1
+    fi
+  done
+done
+exit 0
