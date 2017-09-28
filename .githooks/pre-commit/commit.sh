@@ -8,14 +8,15 @@
 #[ "$current_branch" != "$develop_branch" ] && exit 0
 
 # regex to validate in commit msg
-commit_regex='(wap-[0-9]+|merge)'
+#commit_regex='(wap-[0-9]+|merge)'
+commit_regex="updated"
 error_msg="Aborting commit. Your commit message is missing either a JIRA Issue ('WAP-1111') or 'Merge'"
 echo "$1"
 MESSAGE=$(git log -1 HEAD --pretty=format:%s)
 echo "$MESSAGE"
 #if grep "$commit_regex" "$MESSAGE"; then
-#if [[ grep ${commit_regex} != ${$MESSAGE} ]]; then 
-if ! grep -iE "$commit_regex" "$1"; then
+if [[ ${commit_regex} != ${1} ]]; then 
+#if ! grep -iE "$commit_regex" "$1"; then
    echo "$error_msg" >&2
     exit 1
 fi
