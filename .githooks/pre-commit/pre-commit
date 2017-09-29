@@ -1,4 +1,5 @@
-#!/bin/sh
+#!/usr/bin/env bash
+
 
 # set this to your active development branch
 #develop_branch="develop"
@@ -8,10 +9,29 @@
 #[ "$current_branch" != "$develop_branch" ] && exit 0
 
 # regex to validate in commit msg
-commit_regex='(DEVOPS-[0-9]+|updated)'
-error_msg="Aborting commit. Your commit message is missing either a JIRA Issue ('DEVOPS-1111') or 'updated'"
+#echo "${line}"
+#commit_regex='(DEVOPS-[0-9]+|updated)'
+#error_msg="Aborting commit. Your commit message is missing either a JIRA Issue ('DEVOPS-1111') or 'updated'"
 
-if ! grep -iqE "$commit_regex" "$1"; then
-    echo "$error_msg" >&2
-    exit 1
-fi
+#if ! grep -iqE "$commit_regex" "${#line}"; then
+#    echo "$error_msg" >&2
+#    exit 1
+#fi
+
+
+# Hook to make sure that no commit message line exceeds 72 characters
+
+while read line; do
+    # Skip comments
+    if [ "${line:0:1}" == "#" ]; then
+        continue
+    fi
+    if [ ${#line} -ge 7 ]; then
+        echo "Commit messages are limited to 72 characters."
+        echo "The following commit message has ${#line} characters."
+        echo "${line}"
+        exit 1
+    fi
+done
+
+exit 0
